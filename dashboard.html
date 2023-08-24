@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css"
+      href="./addons/materialize/css/materialize.min.css">
+    <script type="text/javascript" src="./addons/jquery/jquery.min.js"></script>
+    <script type="text/javascript"
+      src="./addons/materialize/js/materialize.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Icons"
+      rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;600;800&family=Poppins:wght@100;200;500&display=swap"
+      rel="stylesheet">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Dashboard - Sistema de Ordenes</title>
+    <style type="text/css">
+    body {
+      background-color: #DADADA;
+      font-family: 'Poppins';
+      font-weight: normal;
+    }
+
+    body>.grid {
+      height: 100%;
+    }
+
+    .image {
+      margin-top: -100px;
+    }
+
+    .column {
+      max-width: 450px;
+    }
+  </style>
+  </head>
+
+  <body>
+    <script src="./scripts/misc.js"></script>
+    <script>
+      $(document).ready(() => {
+        $(document).ready(function(){
+          $('.sidenav').sidenav();
+          $(".dropdown-trigger").dropdown();
+          $.ajax({
+            type: "get",
+            contentType: 'application/json', // Establece el Content-Type a JSON
+            dataType: 'json',
+            url: "http://127.0.0.1:5000/user/profile",
+            headers: {
+              "Authorization": "Bearer " + localStorage.getItem('token')
+            },
+            success: (data, text, xhr) => {
+                if (data.success == true){
+                }else{
+                    alert("Error al dibujar el menú del usuario")
+                }
+            },
+            error: (data, text, xhr) => {
+              switch(xhr){
+                case "UNAUTHORIZED":
+                  alert("El token venció");
+                  window.location.href = "index.html";
+                break;
+              }
+              alert("Error desconocido: " + text)
+            }
+        })
+  
+          var menuData = []
+          $.ajax({
+            type: "get",
+            contentType: 'application/json', // Establece el Content-Type a JSON
+            dataType: 'json',
+            url: "http://127.0.0.1:5000/menu/menus",
+            headers: {
+              "Authorization": "Bearer " + localStorage.getItem('token')
+            },
+            success: (data, text, xhr) => {
+                if (data.success == true){
+                  menuData = data.result;
+                  $.each(menuData, (idx, item) => {
+                    buildMenu(item);
+                    $('.ui.dropdown').dropdown();
+                    $(`[data-id="${item.MENUID}"] .item`).on('click', (e) => {
+                      alert("pne")
+                      e.preventDefault();
+                    })
+                  });
+                  
+                }else{
+                    alert("Error al dibujar el menú del usuario")
+                }
+            },
+            error: (data, text, xhr) => {
+              switch(xhr){
+                case "UNAUTHORIZED":
+                  window.location.href = "index.html";
+                break;
+              }
+              alert("Error desconocido: " + text)
+            }
+        })
+        });
+             
+
+       
+
+        var menuContainer = $("#mainMenu");
+
+            function buildMenu(menuItem) {
+                if (menuItem.MENUPARENT === null) {
+                  menuContainer.append(`<li data-id='${menuItem.MENUID}'><a>${menuItem.MENUNAME}</a></li>`)
+                } else {
+                  var padre = $(`<li data-id='${menuItem.MENUID}'><a class='dropdown-trigger'>${menuItem.MENUNAME}<i class="material-icons right">arrow_drop_down</i></a></li>`);
+                  var busqueda = $("li").find(`[data-id='${menuItem.MENUID}']`);
+                  if(busqueda.length < 1){
+                    var menuHijo = $(`<li data-id='${menuItem.MENUID}'><a>${menuItem.MENUNAME}</a></li>`);
+                    busqueda.append(menuHijo)
+                    menuContainer.append(padre);
+                  }else{
+                    var ul = $("<ul>");
+                    var li = $("<li>")
+                  }
+                  
+                  
+                }
+            }
+
+      })
+    </script>
+    <nav>
+      <div class="nav-wrapper indigo">
+        <a class="brand-logo">Órdenes de compra</a>
+        <a data-target="mobile-demo" class="sidenav-trigger"><i
+            class="material-icons">menu</i></a>
+        <ul class="right hide-on-med-and-down" id="mainMenu">
+        </ul>
+        
+      </div>
+    </nav>
+
+    <ul id='dropdown1' class='dropdown-content'>
+      <li><a href="#!">one</a></li>
+      <li><a href="#!">two</a></li>
+      <li class="divider" tabindex="-1"></li>
+      <li><a href="#!">three</a></li>
+      <li><a href="#!"><i class="material-icons">view_module</i>four</a></li>
+      <li><a href="#!"><i class="material-icons">cloud</i>five</a></li>
+    </ul>
+
+    <ul class="sidenav" id="mobile-demo">
+      <li><a class="active" href="sass.html">Sass</a></li>
+      <li><a href="badges.html">Components</a></li>
+      <li><a href="collapsible.html">Javascript</a></li>
+      <li><a href="mobile.html">Mobile</a></li>
+    </ul>
+
+  </body>
+
+</html>
