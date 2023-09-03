@@ -1,6 +1,7 @@
 'use strict'
 
 function doLogin(){
+    $("#loginProgress").show()
     var username = $("#usernameFld").val();
     var password =  $("#passwdFld").val();
     if(username.trim() !== "" && password != ""){
@@ -27,16 +28,22 @@ function doLogin(){
                     var toastHtml = `<span>Error: ${data.message}.</span><button onclick="M.Toast.dismissAll();" class="btn-flat toast-action">Cerrar</button>`
                     M.toast({html: toastHtml, classes: 'rounded'})
                 }
+                $("#loginProgress").hide()
             },
+            finally: (() => {
+                $("#loginProgress").hide()
+            })
         })
         .fail((xhr, status, thrown) => {
             if(status == 'error' && xhr == null || xhr == undefined){
                 var toastHtml = `<span>Error, el servidor no responde.</span><button onclick="M.Toast.dismissAll();" class="btn-flat toast-action">Cerrar</button>`
                 M.toast({html: toastHtml, classes: 'rounded'})
             }
+            $("#loginProgress").hide()
         })
     }else{
         M.toast({html: 'No ha completado los campos'});
+        $("#loginProgress").hide()
     }
     
 }
